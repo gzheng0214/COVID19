@@ -2,7 +2,7 @@
 * @Author: Gavin
 * @Date:   2021-01-06 15:38:29
 * @Last Modified by:   Gavin
-* @Last Modified time: 2021-01-06 17:59:28
+* @Last Modified time: 2021-01-07 16:00:56
 */
 * {
   margin: 0;
@@ -57,14 +57,14 @@ body {
       overflow: hidden; }
       .content__countries-card-flag {
         width: 100%;
-        height: auto;
+        height: 70%;
         object-fit: cover; }
       .content__countries-card-info {
         height: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 1rem;
+        padding: 1.2rem;
         font-size: 1.3rem; }
         .content__countries-card-info--boldest {
           font-weight: 700;
@@ -102,3 +102,17 @@ body {
 
 .hidden {
   display: none; }
+
+.spinner {
+  margin: 5rem auto;
+  text-align: center; }
+  .spinner img {
+    height: 10rem;
+    width: 10rem;
+    animation: rotate 1s infinite linear; }
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0); }
+  100% {
+    transform: rotate(360deg); } }
