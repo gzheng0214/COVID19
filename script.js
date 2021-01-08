@@ -2,7 +2,7 @@
  * @Author: Gavin
  * @Date:   2021-01-07 14:40:56
  * @Last Modified by:   Gavin
- * @Last Modified time: 2021-01-07 18:11:43
+ * @Last Modified time: 2021-01-07 22:51:36
  */
 
 // TIMEOUT WHEN THE REQUEST TAKES TOO LONG
@@ -50,9 +50,6 @@ window.addEventListener('load', async function() {
             return 0; //default return value (no sorting)
         });
 
-        // CLEAR SPINNER AFTER ALL THE DATA IS RETURNED
-
-
         // GETTING COUNTRY FLAG/NAME/REGION/ISO FROM REST COUNTRIES API
         const listOfCountriesFlag = listOfCountries.map(country => country.flag);
         const listOfCountriesName = listOfCountries.map(country => country.name);
@@ -84,15 +81,15 @@ window.addEventListener('load', async function() {
 });
 
 // SEARCH BAR FILTER
-document.querySelector('.searchbar').addEventListener('keyup', function(){
-	const input = document.querySelector('.searchbar');
-	const filter = input.value.toUpperCase();
-	const container = document.querySelector(".content__countries");
+document.querySelector('.searchbar').addEventListener('keyup', function() {
+    const input = document.querySelector('.searchbar');
+    const filter = input.value.toUpperCase();
+    const container = document.querySelector(".content__countries");
     const countryCards = container.querySelectorAll('.content__countries-card');
     for (let i = 0; i < countryCards.length; i++) {
-    	const info = countryCards[i].getElementsByTagName('p')[0];
-    	const countryName = info.querySelector('.content__countries-card-info--boldest');
-    	const txtValue = countryName.textContent;
+        const info = countryCards[i].getElementsByTagName('p')[0];
+        const countryName = info.querySelector('.content__countries-card-info--boldest');
+        const txtValue = countryName.textContent;
         if (txtValue.toUpperCase().startsWith(filter)) {
             countryCards[i].classList.remove("hidden");
         } else {
@@ -101,17 +98,118 @@ document.querySelector('.searchbar').addEventListener('keyup', function(){
     }
 
     if (Array.from(countryCards).every(card => card.classList.contains('hidden')) && !document.querySelector('.error')) {
-    	if (!document.querySelector('.noResult')) {
-    		document.querySelector('.content__countries').insertAdjacentHTML('afterbegin', `<h1 class="noResult">No results found.</h1>`);
-    	}
+        if (!document.querySelector('.noResult')) {
+            document.querySelector('.content__countries').insertAdjacentHTML('afterbegin', `<h1 class="noResult">No results found.</h1>`);
+        }
     } else {
-    	if (document.querySelector('.noResult')) {
-    		document.querySelector('.noResult').remove();
-    	}
+        if (document.querySelector('.noResult')) {
+            document.querySelector('.noResult').remove();
+        }
     }
 });
 
-document.querySelector('.content__countries').addEventListener('click', async function(e){
-	console.log(e.target.closest('.content__countries-card'));
+// GETTING DATA FOR POPUP FROM COVID19 API
+document.querySelector('.content__countries').addEventListener('click', async function(e) {
+    try {
+        if (!e.target.closest('.content__countries-card-flag')) return;
+        // FIGURE OUT WHICH COUNTRY THE USER CLICKED
+        const parentEl = e.target.closest('.content__countries-card-flag').parentElement;
+        const iso = parentEl.dataset.iso;
+        document.querySelector('.overlay').classList.toggle('hidden');
+
+        // LOAD SPINNER
+        document.querySelector('.overlay__content').insertAdjacentHTML('afterbegin', `<div class="spinner">
+                    <img src="images/loading.svg" alt="Loader">
+                </div>`);
+
+        // LOAD DATA FROM COVID19 API
+        const res = await Promise.race([fetch(`https://api.covid19api.com/total/country/${iso}`), timeout(TIMEOUT_SEC)]);
+        if (!res.ok) {
+        	document.querySelector('.spinner').remove();
+            throw new Error(res.status);
+        }
+        const data = await res.json();
+        if (data.length == 0) {
+        	document.querySelector('.spinner').remove();
+        	throw new Error('No info was found');
+        }
+        document.querySelector('.spinner').remove();
+        // GETTING INFO FROM MOST RECENT DATE
+        const lastData = data[data.length - 1];
+        const countryName = lastData.Country;
+        const confirmed = lastData.Confirmed;
+        const deaths = lastData.Deaths;
+        const recovered = lastData.Recovered;
+        const active = lastData.Active;
+        const caseFatality = ((deaths / confirmed) * 100).toFixed(2);
+
+        // INFO FOR THE CHART
+        const firstDayMonths = data.filter(element => element.Date.includes('-01T'));
+        const listOfDates = firstDayMonths.map(element => element.Date).map(date => date.slice(0, date.indexOf('T')));
+        const listOfActive = firstDayMonths.map(element => element.Active);
+        let updatedDate = new Date(lastData.Date);
+        updatedDate = updatedDate.toString().split(' ');
+        document.querySelector('.overlay__content').insertAdjacentHTML('afterbegin', `
+    		<div class="overlay__content-left">
+                <p class="overlay__content-left-info">
+                    <span class="boldest">${countryName}</span>
+                    <span class="bold">Confirmed: <span class="light">${confirmed}</span></span>
+                    <span class="bold">Deaths: <span class="light">${deaths}</span></span>
+                    <span class="bold">Recovered: <span class="light">${recovered}</span></span>
+                    <span class="bold">Active: <span class="light">${active}</span></span>
+                    <span class="bold">Case-fatality: <span class="light">${caseFatality} %</span></span>
+                    <span class="bold">Date updated: <span class="light">${updatedDate[1]}, ${updatedDate[2]}, ${updatedDate[3]}</span></span>
+                </p>
+            </div>
+            <div class="overlay__content-right">
+                <figure class="highcharts-figure">
+                    <div id="container"></div>
+                </figure>
+            </div>    	
+        	`);
+
+        // SETTING UP HIGHCHARTS
+        Highcharts.chart('container', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Monthly COVID19 Active Cases'
+            },
+            xAxis: {
+                categories: listOfDates
+            },
+            yAxis: {
+                title: {
+                    text: 'Active Cases'
+                }
+            },
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: true
+                    },
+                    enableMouseTracking: true
+                }
+            },
+            series: [{
+                name: countryName,
+                data: listOfActive
+            }]
+        });
+
+
+    } catch (err) {
+        document.querySelector('.overlay__content').insertAdjacentHTML('afterbegin', `<h1 class="error">${err}. Please try again.</h1>`);
+    }
 });
 
+
+// Close button for the overlay
+document.querySelector('.overlay').addEventListener('click', function(e) {
+	if (e.target === document.querySelector('.overlay') || e.target === document.querySelector('.overlay__close'))
+    	document.querySelector('.overlay').classList.toggle('hidden');
+    while (document.querySelector('.overlay__content').childNodes.length > 2) {
+    	document.querySelector('.overlay__content').removeChild(document.querySelector('.overlay__content').firstChild);
+}
+});
