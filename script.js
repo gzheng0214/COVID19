@@ -2,7 +2,7 @@
  * @Author: Gavin
  * @Date:   2021-01-07 14:40:56
  * @Last Modified by:   Gavin
- * @Last Modified time: 2021-01-08 02:12:01
+ * @Last Modified time: 2021-01-08 03:15:02
  */
 
 // TIMEOUT WHEN THE REQUEST TAKES TOO LONG
@@ -16,7 +16,7 @@ const timeout = function(s) {
     });
 };
 
-// LOAD COUNTRIES WHEN LOADS THE WINDOW
+// LOAD COUNTRIES WHEN LOADING SITE
 window.addEventListener('load', async function() {
     try {
         document.querySelector('.content__countries').insertAdjacentHTML('afterbegin', `<div class="spinner">
@@ -205,7 +205,7 @@ document.querySelector('.content__countries').addEventListener('click', async fu
 });
 
 
-// Close the overlay
+// Close the overlay and clear out info in the overlay
 document.querySelector('.overlay').addEventListener('click', function(e) {
     if (e.target === document.querySelector('.overlay') || e.target === document.querySelector('.overlay__close')) {
         document.querySelector('.overlay').classList.toggle('hidden');
