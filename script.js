@@ -2,7 +2,7 @@
  * @Author: Gavin
  * @Date:   2021-01-07 14:40:56
  * @Last Modified by:   Gavin
- * @Last Modified time: 2021-01-07 22:51:36
+ * @Last Modified time: 2021-01-08 02:12:01
  */
 
 // TIMEOUT WHEN THE REQUEST TAKES TOO LONG
@@ -125,13 +125,13 @@ document.querySelector('.content__countries').addEventListener('click', async fu
         // LOAD DATA FROM COVID19 API
         const res = await Promise.race([fetch(`https://api.covid19api.com/total/country/${iso}`), timeout(TIMEOUT_SEC)]);
         if (!res.ok) {
-        	document.querySelector('.spinner').remove();
+            document.querySelector('.spinner').remove();
             throw new Error(res.status);
         }
         const data = await res.json();
         if (data.length == 0) {
-        	document.querySelector('.spinner').remove();
-        	throw new Error('No info was found');
+            document.querySelector('.spinner').remove();
+            throw new Error('No info was found');
         }
         document.querySelector('.spinner').remove();
         // GETTING INFO FROM MOST RECENT DATE
@@ -174,7 +174,7 @@ document.querySelector('.content__countries').addEventListener('click', async fu
                 type: 'line'
             },
             title: {
-                text: 'Monthly COVID19 Active Cases'
+                text: 'COVID19 Active Cases'
             },
             xAxis: {
                 categories: listOfDates
@@ -205,11 +205,12 @@ document.querySelector('.content__countries').addEventListener('click', async fu
 });
 
 
-// Close button for the overlay
+// Close the overlay
 document.querySelector('.overlay').addEventListener('click', function(e) {
-	if (e.target === document.querySelector('.overlay') || e.target === document.querySelector('.overlay__close'))
-    	document.querySelector('.overlay').classList.toggle('hidden');
-    while (document.querySelector('.overlay__content').childNodes.length > 2) {
-    	document.querySelector('.overlay__content').removeChild(document.querySelector('.overlay__content').firstChild);
-}
+    if (e.target === document.querySelector('.overlay') || e.target === document.querySelector('.overlay__close')) {
+        document.querySelector('.overlay').classList.toggle('hidden');
+        while (document.querySelector('.overlay__content').childNodes.length > 2) {
+            document.querySelector('.overlay__content').removeChild(document.querySelector('.overlay__content').firstChild);
+        }
+    }
 });

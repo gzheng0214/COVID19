@@ -2,7 +2,7 @@
 * @Author: Gavin
 * @Date:   2021-01-06 15:38:29
 * @Last Modified by:   Gavin
-* @Last Modified time: 2021-01-07 22:11:17
+* @Last Modified time: 2021-01-08 02:10:41
 */
 * {
   margin: 0;
@@ -106,18 +106,34 @@ body {
   justify-content: center;
   align-items: center; }
   .overlay__content {
-    width: 100rem;
+    width: 90rem;
     height: 50rem;
     display: flex;
     background-color: #fff;
     border-radius: .5rem;
     overflow: hidden;
-    position: relative; }
+    position: relative;
+    overflow-y: auto; }
+    @media only screen and (max-width: 56.25em) {
+      .overlay__content {
+        width: 70rem; } }
+    @media only screen and (max-width: 43.75em) {
+      .overlay__content {
+        flex-direction: column;
+        width: 50rem;
+        height: 70rem; } }
+    @media only screen and (max-width: 31.25em) {
+      .overlay__content {
+        width: 40rem;
+        height: 60rem; } }
     .overlay__content-left {
       width: 50%;
       display: flex;
       justify-content: center;
       background-color: #fafafa; }
+      @media only screen and (max-width: 43.75em) {
+        .overlay__content-left {
+          width: 100%; } }
       .overlay__content-left-info {
         display: flex;
         flex-direction: column;
@@ -130,12 +146,22 @@ body {
           font-weight: 700;
           font-size: 5rem;
           align-self: center; }
+          @media only screen and (max-width: 43.75em) {
+            .overlay__content-left-info .boldest {
+              align-self: flex-start; } }
+          @media only screen and (max-width: 31.25em) {
+            .overlay__content-left-info .boldest {
+              font-size: 3rem; } }
         .overlay__content-left-info .bold {
           font-weight: 600; }
         .overlay__content-left-info .light {
           font-weight: 300; }
     .overlay__content-right {
       width: 50%; }
+      @media only screen and (max-width: 43.75em) {
+        .overlay__content-right {
+          width: 100%;
+          height: 100%; } }
   .overlay__close {
     font-size: 3rem;
     position: absolute;
@@ -150,8 +176,14 @@ body {
 .highcharts-figure {
   display: grid;
   align-items: center; }
+  @media only screen and (max-width: 43.75em) {
+    .highcharts-figure {
+      justify-content: center;
+      align-content: center;
+      height: 100%; } }
 
-.highcharts-figure, .highcharts-data-table {
+.highcharts-figure,
+.highcharts-data-table table {
   width: 100%;
   height: 100%; }
 
@@ -173,4 +205,8 @@ body {
     transform: rotate(360deg); } }
 
 .error {
-  text-align: center; }
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); }

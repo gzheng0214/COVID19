@@ -2,7 +2,7 @@
 * @Author: Gavin
 * @Date:   2021-01-06 15:38:29
 * @Last Modified by:   Gavin
-* @Last Modified time: 2021-01-07 22:11:17
+* @Last Modified time: 2021-01-08 02:10:41
 */
 
 $light-gray: hsl(0, 0%, 98%);
@@ -140,19 +140,39 @@ body {
     align-items: center;
 
     &__content {
-        width: 100rem;
+        width: 90rem;
         height: 50rem;
         display: flex;
         background-color: $white;
         border-radius: .5rem;
         overflow: hidden;
         position: relative;
+        overflow-y: auto;
+
+        @media only screen and (max-width: 56.25em) {
+            width: 70rem;
+        }
+
+        @media only screen and (max-width: 43.75em) {
+            flex-direction: column;
+            width: 50rem;
+            height: 70rem;
+        }
+
+        @media only screen and (max-width: 31.25em) {
+            width: 40rem;
+            height: 60rem;
+        }
 
         &-left {
             width: 50%;
             display: flex;
             justify-content: center;
             background-color: $light-gray;
+
+            @media only screen and (max-width: 43.75em) {
+                width: 100%;
+            }
 
             &-info {
                 display: flex;
@@ -161,13 +181,21 @@ body {
                 width: 100%;
                 padding: 5rem;
                 font-size: 2rem;
-
                 justify-content: space-between;
 
                 .boldest {
                     font-weight: 700;
                     font-size: 5rem;
                     align-self: center;
+
+                    @media only screen and (max-width: 43.75em) {
+                        align-self: flex-start;
+                    }
+
+                    @media only screen and (max-width: 31.25em) {
+                        font-size: 3rem;
+                    }
+
                 }
 
                 .bold {
@@ -182,6 +210,11 @@ body {
 
         &-right {
             width: 50%;
+
+            @media only screen and (max-width: 43.75em) {
+                width: 100%;
+                height: 100%;
+            }
         }
     }
 
@@ -194,7 +227,7 @@ body {
         color: $grey;
 
         &:hover {
-            color: rgb(0,0,0);
+            color: rgb(0, 0, 0);
             cursor: pointer;
         }
     }
@@ -205,13 +238,20 @@ body {
     &-figure {
         display: grid;
         align-items: center;
+
+        @media only screen and (max-width: 43.75em) {
+            justify-content: center;
+            align-content: center;
+            height: 100%;
+        }
     }
 
     &-figure,
-    &-data-table {
+    &-data-table table {
         width: 100%;
         height: 100%;
     }
+
 }
 
 .hidden {
@@ -241,4 +281,8 @@ body {
 
 .error {
     text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
